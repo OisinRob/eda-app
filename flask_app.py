@@ -6,6 +6,7 @@ from flask.ext.sqlalchemy import SQLAlchemy
 import pandas as pd
 import dictfile as dkt
 
+
 app = Flask(__name__)
 
 
@@ -30,47 +31,50 @@ class Comment(db.Model):
     content = db.Column(db.String(4096))
 
 class Points(db.Model):
-    __tablename__ = "points"
+    __tablename__ = "POINTS"
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(4096), nullable=False)
-    Irish = db.Column(db.Integer)
-    English = db.Column(db.Integer)
-    Maths = db.Column(db.Integer)
-    History = db.Column(db.Integer)
-    Geography = db.Column(db.Integer)
-    Latin = db.Column(db.Integer)
-    Ancient_Greek = db.Column(db.Integer)
-    Classical_studies = db.Column(db.Integer)
-    French = db.Column(db.Integer)
-    German = db.Column(db.Integer)
-    Spanish = db.Column(db.Integer)
-    Italian = db.Column(db.Integer)
-    Art = db.Column(db.Integer)
-    Applied_Maths = db.Column(db.Integer)
-    Physics = db.Column(db.Integer)
-    Chemistry = db.Column(db.Integer)
-    Physics_and_Chemistry = db.Column(db.Integer)
-    Ag_Science = db.Column(db.Integer)
-    Biology = db.Column(db.Integer)
-    Agricultural_Economics = db.Column(db.Integer)
-    Engineering = db.Column(db.Integer)
-    Construction_Studies = db.Column(db.Integer)
-    Accounting = db.Column(db.Integer)
-    Business = db.Column(db.Integer)
-    Economics = db.Column(db.Integer)
-    Finnish = db.Column(db.Integer)
-    Japanese = db.Column(db.Integer)
-    Arabic = db.Column(db.Integer)
-    Technology = db.Column(db.Integer)
-    Music = db.Column(db.Integer)
-    Home_Ec = db.Column(db.Integer)
-    Russian = db.Column(db.Integer)
-    Religious_Education = db.Column(db.Integer)
-    Link_Module = db.Column(db.Integer)
-    Polish = db.Column(db.Integer)
-    Hungarian = db.Column(db.Integer)
-    Romanian = db.Column(db.Integer)
-    Design_and_Comm_Graphics = db.Column(db.Integer)
+    EXAM_NUM = db.Column(db.String(4096), nullable=True)
+    NAME = db.Column(db.String(4096), nullable=True)
+    IRISH = db.Column(db.Integer)
+    ENGLISH = db.Column(db.Integer)
+    MATHS = db.Column(db.Integer)
+    HISTORY = db.Column(db.Integer)
+    GEOGRAPHY = db.Column(db.Integer)
+    LATIN = db.Column(db.Integer)
+    ANCIENT_GREEK = db.Column(db.Integer)
+    CLASSICAL_STUDIES = db.Column(db.Integer)
+    FRENCH = db.Column(db.Integer)
+    GERMAN = db.Column(db.Integer)
+    SPANISH = db.Column(db.Integer)
+    ITALIAN = db.Column(db.Integer)
+    ART = db.Column(db.Integer)
+    APPLIED_MATHS = db.Column(db.Integer)
+    PHYSICS = db.Column(db.Integer)
+    CHEMISTRY = db.Column(db.Integer)
+    PHYSICS_AND_CHEMISTRY = db.Column(db.Integer)
+    AG_SCIENCE = db.Column(db.Integer)
+    BIOLOGY = db.Column(db.Integer)
+    AGRICULTURAL_ECONOMICS = db.Column(db.Integer)
+    ENGINEERING = db.Column(db.Integer)
+    CONSTRUCTION_STUDIES = db.Column(db.Integer)
+    ACCOUNTING = db.Column(db.Integer)
+    BUSINESS = db.Column(db.Integer)
+    ECONOMICS = db.Column(db.Integer)
+    FINNISH = db.Column(db.Integer)
+    JAPANESE = db.Column(db.Integer)
+    ARABIC = db.Column(db.Integer)
+    TECHNOLOGY = db.Column(db.Integer)
+    MUSIC = db.Column(db.Integer)
+    HOME_EC = db.Column(db.Integer)
+    RUSSIAN = db.Column(db.Integer)
+    RELIGIOUS_EDUCATION = db.Column(db.Integer)
+    LINK_MODULE = db.Column(db.Integer)
+    POLISH = db.Column(db.Integer)
+    HUNGARIAN = db.Column(db.Integer)
+    ROMANIAN = db.Column(db.Integer)
+    DESIGN_AND_COMM_GRAPHICS = db.Column(db.Integer)
+    TOTALS = db.Column(db.Integer)
+    CUTOFF = db.Column(db.Integer)
 
 class Grades(db.Model):
     __tablename__ = "GRADES"
@@ -132,12 +136,18 @@ def index():
 def upload():
     file = request.files['file']
     if file:
-
         data = pd.read_csv(file)
         # Here go transforms
         clean_data = dkt.dataAlign(data)
         clean_data = clean_data.astype(object).where(pd.notnull(clean_data), None)
         clean_data.to_sql(name='GRADES', con=db.engine, if_exists = 'append', index=False)
-
+        # Points Table
+        clean_points = dkt.dataPoints(clean_data)
+        clean_points = clean_points.astype(object).where(pd.notnull(clean_points), None)
+        clean_points.to_sql(name='POINTS', con=db.engine, if_exists = 'append', index=False)
         return redirect(url_for('index'))
 
+@app.route('/points')
+def points():
+    points = db.engine.execute("SELECT * FROM POINTS;")
+    return render_template("points_table.html", points=points)

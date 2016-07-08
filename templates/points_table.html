@@ -1,0 +1,20 @@
+<table class="table">
+    <thead>
+        <tr>
+            <th>name</th>
+            <th>age</th>
+            <th>option</th>
+        <tr>
+    </thead>
+    <tbody>
+        {% for person in points %}
+        <tr>
+            <td>{{ person.NAME }}</td>
+            <td>{{ person.TOTALS }}</td>
+
+        </tr>
+        {% endfor %}
+    </tbody>
+    <!--http://stackoverflow.com/questions/30925312/dc-js-selecting-columns-in-csv-to-render-chart-->
+    <!--http://www.codeproject.com/Articles/693841/Making-Dashboards-with-Dc-js-Part-1-Using-Crossfil-->
+</table>
