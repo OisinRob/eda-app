@@ -1,0 +1,50 @@
+Create user data base... for now this will be editible only through the shell
+I need to find out wht chrts re required nd mke the queries
+our_user = session.query(User).filter_by(name='ed').first()
+think how it cn be summed up in the ddress br
+mke surre tht its secure
+mke fncy
+
+wht i wnt is ech subject s  row
+
+you need  to crete some kind of mtrix for wht subjects re in ech file or even just  list of them
+select * from points
+crete dict for everything in the file
+for ech item
+hve  list tht we ppend to (dict)
+
+
+IRISH | ENGLISH | MATHS | HISTORY | GEOGRAPHY | LATIN | ANCIENT_GREEK | CLASSICAL_STUDIES | FRENCH | GERMAN | SPAN
+ISH | ITALIAN | ART  | APPLIED_MATHS | PHYSICS | CHEMISTRY | PHYSICS_AND_CHEMISTRY | AG_SCIENCE | BIOLOGY | AGRICULTURAL_ECONOMICS | ENGINEERING | C
+ONSTRUCTION_STUDIES | ACCOUNTING | BUSINESS | ECONOMICS | FINNISH | JAPANESE | ARABIC | TECHNOLOGY | MUSIC, HOME_EC, RUSSIAN, RELIGIOUS_EDUCATION, LINK_MODULE, POLISH, HUNGARIAN, ROMANIAN, DESIGN_AND_COMM_GRAPHICS
+
+
+
+
+Once you login, there is a token that knows who you are.
+
+from there I could use the filename in the browser... cant see why not, would need to have unique names, will need to update upload to only allow new filenames
+And also have a place to enter the name of the file
+
+
+create page that shows availible links
+Auto populate
+
+change chart page to just basic data
+with the lect side populated auto by...
+
+STILL TO DO
+So bold for the one i am in
+then not bold, list of the subjects
+the bold the rest (have to find "rest")
+
+Step the side bar back so i only have t update it once
+
+Test the upload script...i believe it lives locally?
+Add data to othe sql tables on upload
+consider if aditional tables are needed
+
+Navigation stuff
+
+
+

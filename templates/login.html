@@ -1,0 +1,18 @@
+{% if current_user.is_authenticated %}
+<p>You're logged in already!</p>
+{{username}}
+{% else %}
+
+<link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='assets/css/login.css') }}" />
+
+<div class="logo"></div>
+<div class="login-block">
+    <h1>Login</h1>
+    <form action="/login" method="POST">
+    <input type="username" value="" name="username" placeholder="Username" id="username" />
+    <input type="password" value="" name="password" placeholder="Password" id="password" />
+    <!--<input type="submit" value="Log in">-->
+    <button type="submit">Log in</button>
+</div>
+{% endif %}

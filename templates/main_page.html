@@ -25,21 +25,31 @@
     </nav>
 
 
+    <!--<div class="container">-->
+
+    <!--    {% for comment in comments %}-->
+    <!--        <div class="row">-->
+    <!--            {{ comment.content }}-->
+    <!--        </div>-->
+    <!--    {% endfor %}-->
+
+    <!--    <div class="row">-->
+    <!--        <form action="." method="POST">-->
+    <!--            <textarea name="contents" placeholder="Enter a comment"></textarea>-->
+    <!--            <input type="submit" value="Post comment">-->
+    <!--        </form>-->
+    <!--    </div>-->
+    <!--</div><!-- /.container -->
     <div class="container">
 
-        {% for comment in comments %}
-            <div class="row">
-                {{ comment.content }}
-            </div>
-        {% endfor %}
 
-        <div class="row">
-            <form action="." method="POST">
-                <textarea name="contents" placeholder="Enter a comment"></textarea>
-                <input type="submit" value="Post comment">
-            </form>
+
+        <div class="header">
+            <h3 class="text-muted">Go to uploaded files</h3>
         </div>
-    </div><!-- /.container -->
+        <a href="/chart">Files</a>
+
+    </div>
 
     <div class="container">
 

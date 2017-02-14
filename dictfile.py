@@ -1,6 +1,8 @@
 import re
 import numpy as np
 import pandas as pd
+# import gender_guesser.detector as gender
+# gen = gender.Detector()
 
 grades = {"AA1" : 100, "AA2" : 90, "AB1" : 85, "AB2" : 80, "AB3" : 75, "AC1" : 70, "AC2" : 65, "AC3" : 60, "AD1" : 55, "AD2" : 50, "AD3" : 45, "AE" : 0, "AF" : 0, "BA1" : 0, "BA2" : 0, "BB1" : 0, "BB2" : 0, "BB3" : 0, "BC1" : 0, "BC2" : 0, "BC3" : 0, "BD1" : 0, "BD2" : 0, "BD3" : 0, "BE" : 0, "BF" : 0, "CFM" : 50, "CGD" : 70, "CPP" : 30, "GA1" : 60, "GA2" : 50, "GB1" : 45, "GB2" : 40, "GB3" : 35, "GC1" : 30, "GC2" : 25, "GC3" : 20, "GD1" : 15, "GD2" : 10, "GD3" : 5, "GE" : 0, "GF" : 0, "U" : 0 }
 
@@ -36,7 +38,7 @@ def dataPoints(df):
     cdf = df.replace({"MATHS": maths_grades})
     cdf.replace(grades, inplace=True)
     # Find max points for each student (Clunky as Series.nlargest wont work)
-    stacked = cdf[[x for x in cdf.columns if x not in ["NAME", "ID"]]].stack()
+    stacked = cdf[[x for x in cdf.columns if x not in ["NAME", "ID", "USER", "FILE"]]].stack()
     student_count = max(stacked.index.levels[0])
     totals = []
     maxs = []
@@ -48,6 +50,12 @@ def dataPoints(df):
     cdf["CUTOFF"] = maxs
     return cdf
 
+
+# Add gender column
+# def genderify(df):
+#     genders = [gen.get_gender(x.split(", ")[1], u"ireland") for x in df["NAME"].values]
+#     df["GENDER"] = genders
+#     return df
 
 def test():
     print("Reading")
@@ -61,3 +69,35 @@ def test():
 # Plan
 
 # Views
+
+
+# National File
+def natAlign(path):
+    df = pd.read_csv(path)
+    df_noNan = df.dropna(axis=0, how='all')
+    #     Get dataframe info
+    df_info = df_noNan.columns[0].split()
+    #     Rename Columns
+    grade_listOflist = df_noNan[df_noNan[df_noNan.columns[0]] == "Subjects"].T.values.tolist()
+    grade_list = [item for sublist in grade_listOflist for item in sublist]
+    grade_list[0] = "LABEL"
+    df_noNan.columns = grade_list
+    #     Label rows for filtering
+    unclean_list = df_noNan[[0]].values.tolist()
+    filler_list = []
+    filler = "DELETE"
+    for n, i in enumerate([item for sublist in unclean_list for item in sublist]):
+        if i == "---------------------------" and n != len([item for sublist in unclean_list for item in sublist]) - 1:
+            filler = [item for sublist in unclean_list for item in sublist][n+2]
+            filler_list.append("DELETE")
+        elif n == len([item for sublist in unclean_list for item in sublist]) - 1:
+            filler_list.append("DELETE")
+        else:
+            filler_list.append(filler)
+    #     Add Columns
+    df_noNan["YEAR"] = df_info[0]
+    df_noNan["EXAM"] = df_info[1]
+    df_noNan["LEVEL"] = df_noNan[[0]].iloc[0][0]
+    df_noNan["SUBJECT"] = filler_list
+    #     Remove excess rows and return
+    return df_noNan[df_noNan["SUBJECT"] != "DELETE"]
