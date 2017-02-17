@@ -17,6 +17,13 @@ from pygal.style import Style
 import datetime
 import os
 import numpy as np
+import random
+
+# Things that should not be here
+colour = ['red', 'blue', 'green', 'orange']
+def random_color():
+    levels = range(32,256,32)
+    return tuple(random.choice(levels) for _ in range(3))
 
 custom_style = Style(
   background='transparent',
@@ -490,12 +497,12 @@ def test(file):
     grouped_db = np.round(grouped_db.dropna(axis=1,how='all').fillna(0).drop(["dummy_m", "dummy_f"], axis=1).reindex(["A", "G", "B"]))
 
     outstring_start = "var dataset_start = ["
-    for subject in grouped_db[["AVG_FEMALE", "AVG_MALE"]].columns:
-        outstring_start = outstring_start + "{ label: '" + subject + "', data:[" + ','.join(map(str, grouped_db[subject].values)) + "] },"
+    for num, subject in enumerate(grouped_db[["AVG_FEMALE", "AVG_MALE"]].columns):
+        outstring_start = outstring_start + "{ label: '" + subject.replace('_',' ').title().replace('Female','F').replace('Male','M') + "', backgroundColor: '" + colour[num % 3] + "', data:[" + ','.join(map(str, grouped_db[subject].values)) + "] },"
     outstring_start = outstring_start + "]"
-
+# This is where the full data set is made
     outstring = "var dataset = ["
-    for subject in grouped_db.columns:
-        outstring = outstring + "{ label: '" + subject + "', data:[" + ','.join(map(str, grouped_db[subject].values)) + "] },"
+    for num, subject in enumerate(grouped_db.columns):
+        outstring = outstring + "{ label: '" + subject.replace('_',' ').title().replace('Female','F').replace('Male','M') + "', backgroundColor: 'rgb" + str(random_color()) + "', data:[" + ','.join(map(str, grouped_db[subject].values)) + "] },"
     outstring = outstring + "]"
     return render_template("test.html", table=df_html, outstring=outstring, outstring_start=outstring_start)

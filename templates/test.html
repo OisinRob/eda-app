@@ -6,6 +6,19 @@
       width: 80%;
       margin: 15px auto;
     }
+
+ul {
+  list-style-type: none;
+  padding-left:0;
+}
+
+
+#checkboxes { border:2px solid #ccc;
+  width: 100%;
+  height: auto;
+/*width:300px; height: 100%; */
+overflow-y: scroll; }
+
     </style>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.js"></script>
 <script>
@@ -13,59 +26,50 @@
 
 {{outstring | safe}}
 
-// var dataset = [{
-//       label: 'apples',
-//       data: [12, 19, 3, 17, 28, 24, 7],
-//       backgroundColor: "rgba(153,255,51,1)"
-//     }, {
-//       label: 'oranges',
-//       data: [30, 29, 5, 5, 20, 3, 10],
-//       backgroundColor: "rgba(255,153,0,1)"
-//     },
-//     {
-//       label: 'bananas',
-//       data: [30, 29, 5, 5, 20, 3, 10],
-//       backgroundColor: "rgba(100,153,0,1)"
-//     },]
 
 </script>
 
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" crossorigin="anonymous">
 
 </head>
 
   <body>
-          <div class="container">
+<!--          <div class="container">-->
 
-            <div class="row">
-        <div class="col-md-8">.col-md-8</div>
-        <div class="col-md-4">.col-md-4</div>
-      </div>
-      </div>
+<!--            <div class="row">-->
+<!--        <div class="col-md-8">-->
+
+<!--</div>-->
+<!--        <div class="col-md-4">.col-md-4</div>-->
+<!--      </div>-->
+<!--      </div>-->
 
       <div class="container">
+           <h2>Chart.js — Bar Chart Demo</h2>
 <div class="row">
-<div class="col-md-8">
-<div class="container" id="graph-container">
-  <h2>Chart.js — Bar Chart Demo</h2>
+
+<div class="col-md-9" id="graph-container">
+<!--<div class="container" id="graph-container">-->
   <div>
-    <canvas id="myChart"></canvas>
+    <canvas id="myChart" ></canvas>
   </div>
+<!--</div>-->
+</div>
+<div class="col-md-3"><div class="container" id="checkboxes" ><ul id="checkboxelist" ></div>
+
 </div>
 </div>
 
-<div class="col-md-4">.col-md-4</div>
-</div>
-</div>
-
-<div id="checkboxes"></div>
+<!--<div class="container" id="checkboxes"></div>-->
 <div><table>
-{{table | safe}}
+    <!--This is where the troubleshooting table goes-->
+<!--{{table | safe}}-->
 </table></div>
 <input id = "btnUpdate" type="submit" value="Update"/>
-
     <script src="/static/assets/js/jquery-1.8.3.min.js"></script>
     <script src="/static/assets/js/bootstrap.min.js"></script>
     <script src="/static/assets/js/charting.js"></script>
+
 
   </body>
 </html>

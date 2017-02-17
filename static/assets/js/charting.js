@@ -1,30 +1,14 @@
 var ctx = document.getElementById("myChart").getContext('2d');
-// var dataset = [{
-//       label: 'apples',
-//       data: [12, 19, 3, 17, 28, 24, 7],
-//       backgroundColor: "rgba(153,255,51,1)"
-//     }, {
-//       label: 'oranges',
-//       data: [30, 29, 5, 5, 20, 3, 10],
-//       backgroundColor: "rgba(255,153,0,1)"
-//     },
-//     {
-//       label: 'bananas',
-//       data: [30, 29, 5, 5, 20, 3, 10],
-//       backgroundColor: "rgba(100,153,0,1)"
-//     }]
-// I need to be able to specify the columns being chosen
-// I need the data in the format
-
 
 
 // Generate checkbox for each value in JSON
 $.each(dataset, function () {
-    $("#checkboxes").append($("<label>").text(this.label).prepend(
+    $("#checkboxelist").append($("<li>").text(this.label).prepend(
         $("<input>").attr('type', 'checkbox').val(this.label)
            .prop('checked', this.checked)
     ));
 });
+
 
 
 // Find selected checkboxes
@@ -45,7 +29,7 @@ var myChart = new Chart(ctx, {
   type: 'bar',
   data: {
     // labels: ["M", "T", "W", "T", "F", "S", "S"],
-    labels: ["H", "G", "B"],
+    labels: ["Honors", "Pass", "Foundation"],
 
     datasets: dataset_start
   }
@@ -79,10 +63,16 @@ var myChart = new Chart(ctx, {
           type: 'bar',
           data: {
             // labels: ["M", "T", "W", "T", "F", "S", "S"],
-                labels: ["H", "G", "B"],
+                labels: ["Honors", "Pass", "Foundation"],
             datasets: newdata
           },
                       tooltipTemplate: "<%if (label){%><%=label %>: <%}%><%= value + ' %' %>"
 
         });
     });
+
+// Set height of checkbox menu to equal the chart
+$(document).ready(function() {
+  $("#checkboxes").css("height", $("#myChart").height());
+});
+
