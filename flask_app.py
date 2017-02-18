@@ -266,8 +266,12 @@ login_manager.setup_app(app)
 @app.route('/', methods = ["GET", "POST"])
 @login_required
 def index():
+    # Uploaded section
+    username = current_user.USERNAME
+    uploads = db.session.query(Uploads).filter_by(USERNAME=username)
+    # Uploader section
     if request.method == "GET":
-        return render_template("main_page.html", comments=Comment.query.all())
+        return render_template("user_page.html", comments=Comment.query.all() , uploads=uploads )
 
     comment = Comment(content=request.form["contents"])
     db.session.add(comment)
@@ -322,18 +326,18 @@ def nat_upload():
         nat_data.to_sql(name='NATIONAL', con=db.engine, if_exists = 'append', index=False)
         return redirect(url_for('index'))
 
-@app.route('/points')
-def points():
-    points = db.engine.execute("SELECT * FROM POINTS;")
-    return render_template("points_table.html", points=points)
+# @app.route('/points')
+# def points():
+#     points = db.engine.execute("SELECT * FROM POINTS;")
+#     return render_template("points_table.html", points=points)
 
 
-@app.route('/chart_ui')
-@login_required
-def chart_home_ui():
-    username = current_user.USERNAME
-    uploads = db.session.query(Uploads).filter_by(USERNAME=username)
-    return render_template("charting.html", uploads=uploads)
+# @app.route('/chart_ui')
+# @login_required
+# def chart_home_ui():
+#     username = current_user.USERNAME
+#     uploads = db.session.query(Uploads).filter_by(USERNAME=username)
+#     return render_template("charting.html", uploads=uploads)
 
 
 @app.route('/chart')

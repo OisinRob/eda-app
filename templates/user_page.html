@@ -39,17 +39,19 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
-          <ul class="nav nav-sidebar">
-            <li class="active"><a href=../{{sanitized_file}}>{{sanitized_file}} <span class="sr-only">(current)</span></a></li>
-            {%for subject in subjects%}
-            <li><a href=./{{subject}}>{{subject.replace("_", " ").title()}}</a></li>
-            {% endfor %}
-          </ul>
+          <!--  <h2 class="sub-header">Where AM III?</h2>-->
+          <!--<ul class="nav nav-sidebar">-->
+
+          <!--  <li class="active"><a href=../{{sanitized_file}}>{{sanitized_file}} <span class="sr-only">(current)</span></a></li>-->
+          <!--  {%for subject in subjects%}-->
+          <!--  <li><a href=./{{subject}}>{{subject.replace("_", " ").title()}}</a></li>-->
+          <!--  {% endfor %}-->
+          <!--</ul>-->
 
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
           <h1 class="page-header">Dashboard</h1>
-
+         <div class="row">
           <h2 class="sub-header">Uploaded Files</h2>
           <div class="table-responsive">
             <table class="table table-striped">
@@ -66,12 +68,35 @@
                   <td><a href=/chart/{{ upload.FILENAME }}>{{ upload.FILENAME }}</a></td>
                   <td>{{ upload.STUCOUNT }}</td>
                   <td>{{ upload.CREATED }}</td>
+                  <td><a href=/chart/{{ upload.FILENAME }} type="button" class="btn btn-default" title="Table">
+                     <span class="glyphicon glyphicon-align-left"></span>
+                    </a>
+                    <a href=/test/{{ upload.FILENAME }} type="button" class="btn btn-default" title="chart">
+                     <span class="glyphicon glyphicon-object-align-bottom" ></span>
+                    </a></td>
                 </tr>
             {% endfor %}
 
               </tbody>
             </table>
           </div>
+         </div>
+         <div class="row">
+            <!--<div class="container">-->
+                <div class="header">
+                <h2 class="sub-header">Upload Files</h2>
+                    <h3 class="text-muted">How To Upload a File</h3>
+                </div>
+
+                <form action="upload" method="post" enctype="multipart/form-data">
+                    <input type="file" name="file"><br /><br />
+                    <input type="submit" value="Upload">
+                </form>
+
+            <!--</div>-->
+         </div>
+
+
         </div>
       </div>
     </div>
