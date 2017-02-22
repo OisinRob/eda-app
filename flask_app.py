@@ -19,12 +19,29 @@ import datetime
 import os
 import numpy as np
 import random
+import gender_guesser.detector as gender
 
 # Things that should not be here
 colour = ['red', 'blue', 'green', 'orange']
 def random_color():
     levels = range(32,256,32)
     return tuple(random.choice(levels) for _ in range(3))
+
+# d = gender.Detector()
+def genderizer(row, d):
+    if d.get_gender(row['NAME'].split(",")[-1].replace(" ", "")  ) == 'male':
+        return 'M'
+    elif d.get_gender(row['NAME'].split(",")[-1].replace(" ", "")  ) == 'mostly_male':
+        return 'M'
+    elif d.get_gender(row['NAME'].split(",")[-1].replace(" ", "")  ) == 'female':
+        return 'F'
+    elif d.get_gender(row['NAME'].split(",")[-1].replace(" ", "")  ) == 'mostly_female':
+        return 'F'
+    elif d.get_gender(row['NAME'].split(",")[-1].replace(" ", "")  ) == 'andy':
+        return 'M'
+    elif d.get_gender(row['NAME'].split(",")[-1].replace(" ", "")  ) == 'unknown':
+        return 'F'
+
 
 custom_style = Style(
   background='transparent',
@@ -47,6 +64,7 @@ def data_frame(query, columns):
     def make_row(x):
         return dict([(c, getattr(x, c)) for c in columns])
     return pd.DataFrame([make_row(x) for x in query])
+
 
 
 app = Flask(__name__)
@@ -90,7 +108,6 @@ class Points(db.Model):
     # UPLOADER = db.Column(db.String(4096))
     EXAM_NUM = db.Column(db.String(4096), nullable=True)
     NAME = db.Column(db.String(4096), nullable=True)
-    GENDER = db.Column(db.String(1), nullable=True, default="F")
     IRISH = db.Column(db.Integer)
     ENGLISH = db.Column(db.Integer)
     MATHS = db.Column(db.Integer)
@@ -133,6 +150,7 @@ class Points(db.Model):
     CUTOFF = db.Column(db.Integer)
     USER = db.Column(db.String(25))
     FILE = db.Column(db.String(4096))
+    GENDER = db.Column(db.String(1), nullable=True, default="F")
 
 class Grades(db.Model):
     __tablename__ = "GRADES"
@@ -140,7 +158,6 @@ class Grades(db.Model):
     # UPLOADER = db.Column(db.String(4096))
     EXAM_NUM = db.Column(db.String(4096), nullable=True)
     NAME = db.Column(db.String(4096), nullable=True)
-    GENDER = db.Column(db.String(1), nullable=True, default="F")
     IRISH = db.Column(db.String(4), nullable=True)
     ENGLISH = db.Column(db.String(4), nullable=True)
     MATHS = db.Column(db.String(4), nullable=True)
@@ -181,6 +198,7 @@ class Grades(db.Model):
     DESIGN_AND_COMM_GRAPHICS = db.Column(db.String(4), nullable=True)
     USER = db.Column(db.String(25))
     FILE = db.Column(db.String(4096))
+    GENDER = db.Column(db.String(1), nullable=True, default="F")
 
 class national(db.Model):
     __tablename__ = "NATIONAL"
@@ -271,7 +289,7 @@ def index():
     uploads = db.session.query(Uploads).filter_by(USERNAME=username)
     # Uploader section
     if request.method == "GET":
-        return render_template("user_page.html", comments=Comment.query.all() , uploads=uploads )
+        return render_template("user_page.html", comments=Comment.query.all() , uploads=uploads, username=username )
 
     comment = Comment(content=request.form["contents"])
     db.session.add(comment)
@@ -280,24 +298,24 @@ def index():
 
 @app.route('/upload', methods=['POST'])
 def stu_upload():
+    d = gender.Detector()
     username = current_user.USERNAME
     file = request.files['file']
     if file:
         filename = os.path.splitext(os.path.basename(file.filename))[0]
-
-        query = db.session.query(Uploads).filter_by(USERNAME=username)
-        df_uploads = data_frame(query, [c.name for c in Uploads.__table__.columns])
-        if filename in df_uploads.FILENAME.values:
-            filename = filename + '{:%Y-%b-%d_%H:%M:%S}'.format(datetime.datetime.now())
-
+        try:
+            query = db.session.query(Uploads).filter_by(USERNAME=username)
+            df_uploads = data_frame(query, [c.name for c in Uploads.__table__.columns])
+            if filename in df_uploads.FILENAME.values:
+                filename = filename + '{:%Y-%b-%d_%H:%M:%S}'.format(datetime.datetime.now())
+        except:
+            pass
         data = pd.read_csv(file)
         # Here go transforms
         clean_data = dkt.dataAlign(data)
         clean_data = clean_data.astype(object).where(pd.notnull(clean_data), None)
         clean_data["USER"] = username
         clean_data["FILE"] = filename
-
-        # Add Gender
 
         # Upload File
         upload_dic = {'USERNAME': [username], 'FILENAME': [filename],
@@ -306,8 +324,11 @@ def stu_upload():
         # Points Table
         clean_points = dkt.dataPoints(clean_data)
         clean_points = clean_points.astype(object).where(pd.notnull(clean_points), None)
-        clean_data["USER"] = username
-        clean_data["FILE"] = filename
+        clean_points["USER"] = username
+        clean_points["FILE"] = filename
+        clean_points["GENDER"] = clean_points.apply(lambda row: genderizer(row, d),axis=1)
+        clean_data["GENDER"] = clean_data.apply(lambda row: genderizer(row, d),axis=1)
+
 
         # Upload tables
         clean_data.to_sql(name='GRADES', con=db.engine, if_exists = 'append', index=False)
@@ -358,7 +379,7 @@ def file_page(file):
     df = data_frame(query, [c.name for c in Grades.__table__.columns])
     df = df.dropna(axis=1, how='all')
     subject_tuples = zip(df.columns, [df[x].count() for x in df.columns])
-    return render_template("file_page.html", file=sanitized_file, uploads=uploads, subject_tuples=subject_tuples)
+    return render_template("file_page.html", file=sanitized_file, uploads=uploads, subject_tuples=subject_tuples, username=username)
 
 
 @app.route('/chart/<file>/<subject>')
@@ -405,7 +426,7 @@ def chart_subject(file,subject):
 
     return render_template("basic_chart.html", uploads=uploads, subjects=subjects,
     sanitized_file=sanitized_file, sanitized_subject=sanitized_subject,
-    chart_pie=chart_pie, chart_line=chart_line, table_data=table_data)
+    chart_pie=chart_pie, chart_line=chart_line, table_data=table_data, username=username)
 
 
 
@@ -473,7 +494,9 @@ def test(file):
     firster = lambda x: x[:1] if x is not None else None
     df = df.applymap(firster)
     df_female = df[df.GENDER == 'F'].drop(["GENDER"], axis=1)
-    df_male = df[df.GENDER == 'M'].drop(["GENDER"], axis=1)
+    df_male = df[df.GENDER == 'F'].drop(["GENDER"], axis=1)
+
+    # df_male = df[df.GENDER == 'M'].drop(["GENDER"], axis=1)
     male_count = len(df_male.index)
     female_count = len(df_female.index)
     # create dummy table to join on
@@ -510,4 +533,4 @@ def test(file):
     for num, subject in enumerate(grouped_db.columns):
         outstring = outstring + "{ label: '" + subject.replace('_',' ').title().replace('Female','F').replace('Male','M') + "', backgroundColor: 'rgb" + str(random_color()) + "', data:[" + ','.join(map(str, grouped_db[subject].values)) + "] },"
     outstring = outstring + "]"
-    return render_template("test.html", table=df_html, outstring=outstring, outstring_start=outstring_start)
+    return render_template("test.html", table=df_html, outstring=outstring, outstring_start=outstring_start, username=username)
